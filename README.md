@@ -10,7 +10,7 @@ Interactive visualization website for the PromptX research paper.
 - **Paper Website**: https://research.deepractice.ai/promptx-paper/
 - **Live Demo**: https://promptx.deepractice.ai/
 - **Source Code**: https://github.com/Deepractice/PromptX
-- **Documentation**: https://doc.promptx.deepractice.ai/
+- **Documentation**: https://promptx.deepractice.ai/docs
 
 ## 🚀 Run Locally
 
