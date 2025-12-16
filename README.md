@@ -1,20 +1,74 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# PromptX Paper Visualization
 
-# Run and deploy your AI Studio app
+Interactive visualization website for the PromptX research paper.
 
-This contains everything you need to run your app locally.
+> **PromptX: A Cognitive Agent Platform with Long-term Memory**
+> Published in WWW Companion '26 (The ACM Web Conference 2026)
 
-View your app in AI Studio: https://ai.studio/apps/bundled/research_visualization
+## 🔗 Links
 
-## Run Locally
+- **Paper Website**: https://research.deepractice.ai/promptx-paper/
+- **Live Demo**: https://promptx.deepractice.ai/
+- **Source Code**: https://github.com/Deepractice/PromptX
+- **Documentation**: https://doc.promptx.deepractice.ai/
 
-**Prerequisites:**  Node.js
+## 🚀 Run Locally
 
+**Prerequisites:** Node.js 20+
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+```bash
+# Install dependencies
+npm install
+
+# Run development server
+npm run dev
+```
+
+## 🏗️ Build
+
+```bash
+npm run build
+```
+
+Output will be in the `dist/` directory.
+
+## 📄 License
+
+### Website Code
+
+This project is based on code exported from Google AI Studio and has been
+substantially modified by Deepractice AI. The modifications are released
+under the MIT License. See [LICENSE](./LICENSE).
+
+### Paper Content
+
+The paper content (PDF, figures, and academic text) is published in WWW Companion '26
+and is subject to [ACM copyright terms](https://www.acm.org/publications/policies/copyright-policy).
+
+© 2026 ACM. All rights reserved. For personal and educational use only.
+
+### Citation
+
+```bibtex
+@inproceedings{promptx2026,
+  title={PromptX: A Cognitive Agent Platform with Long-term Memory},
+  author={Wang, Binhao and Huang, Jianglin and Hu, Xiao and Jiang, Shan and Wang, Maolin and Yang, Ching-ho},
+  booktitle={Proceedings of the WWW Companion '26},
+  year={2026}
+}
+```
+
+## 👥 Authors
+
+- Binhao Wang (City University of Hong Kong)
+- Jianglin Huang (Deepractice AI)
+- Xiao Hu (Deepractice AI)
+- Shan Jiang (Deepractice AI) - Core Contributor
+- Maolin Wang (CityU HK & Deepractice AI) - Corresponding Author
+- Ching-ho Yang (Deepractice AI)
+
+And contributors from Deepractice AI, New York University, and City University of Hong Kong.
+
+---
+
+© 2026 Deepractice AI & Authors

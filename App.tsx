@@ -504,10 +504,15 @@ const App: React.FC = () => {
             
             <BibTeXSection />
 
-            <div className="text-center mt-12 text-xs text-stone-600 border-t border-stone-800 pt-8 flex flex-col md:flex-row justify-center items-center gap-2">
-                <span>© 2026 Deepractice AI & Authors.</span>
-                <span className="hidden md:inline">•</span>
-                <span>Published in WWW Companion '26.</span>
+            <div className="text-center mt-12 text-xs text-stone-600 border-t border-stone-800 pt-8 flex flex-col gap-2">
+                <div className="flex flex-col md:flex-row justify-center items-center gap-2">
+                    <span>© 2026 Deepractice AI & Authors.</span>
+                    <span className="hidden md:inline">•</span>
+                    <span>Published in WWW Companion '26.</span>
+                </div>
+                <div className="text-stone-500">
+                    Paper content under ACM copyright. Website code under <a href="https://github.com/Deepractice/Research/blob/main/LICENSE" target="_blank" className="hover:text-nobel-gold transition-colors">MIT License</a>.
+                </div>
             </div>
         </div>
       </footer>
