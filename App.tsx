@@ -9,7 +9,7 @@ import { MemoryActivationDiagram, ArchitectureDiagram, ImpactMetrics, IssueFrame
 import { EngramNetwork3D } from './components/EngramNetwork3D';
 import { DemoSimulation } from './components/DemoSimulation';
 import { TechSpecs } from './components/TechSpecs';
-import { ArrowDown, Menu, X, Github, ExternalLink, FileText, Copy, Check, ChevronUp, Download, Code, Brain, Link2 } from 'lucide-react';
+import { ArrowDown, Menu, X, Github, ExternalLink, FileText, Copy, Check, ChevronUp, Download } from 'lucide-react';
 
 const AuthorCard = ({ name, role, delay }: { name: string, role: string, delay: string }) => {
   return (
@@ -285,26 +285,17 @@ const App: React.FC = () => {
                 To address these gaps, we introduce <strong>PromptX</strong>. Unlike traditional RAG which retrieves static text chunks, PromptX implements a <strong>Cognitive Architecture</strong>. It integrates three core technologies:
               </p>
               <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
-                <li className="p-6 bg-[#FAFAF9] rounded-sm border border-stone-100 hover:border-nobel-gold/30 transition-colors duration-300 group">
-                    <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center mb-4 border border-stone-200 group-hover:border-nobel-gold/50 group-hover:bg-nobel-gold/5 transition-colors">
-                      <Code size={18} className="text-stone-400 group-hover:text-nobel-gold transition-colors" />
-                    </div>
+                <li className="p-6 bg-[#FAFAF9] rounded-sm border border-stone-100 hover:border-nobel-gold/30 transition-colors duration-300">
                     <strong className="block text-stone-900 mb-2 font-serif text-xl">PML</strong>
                     <span className="text-xs uppercase tracking-widest text-stone-400 mb-2 block">Prompt Markup Language</span>
                     <span className="text-sm">Machine-parsable definitions for agent personas and memory organization.</span>
                 </li>
-                <li className="p-6 bg-[#FAFAF9] rounded-sm border border-stone-100 hover:border-nobel-gold/30 transition-colors duration-300 group">
-                    <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center mb-4 border border-stone-200 group-hover:border-nobel-gold/50 group-hover:bg-nobel-gold/5 transition-colors">
-                      <Brain size={18} className="text-stone-400 group-hover:text-nobel-gold transition-colors" />
-                    </div>
+                <li className="p-6 bg-[#FAFAF9] rounded-sm border border-stone-100 hover:border-nobel-gold/30 transition-colors duration-300">
                     <strong className="block text-stone-900 mb-2 font-serif text-xl">Engram Networks</strong>
                     <span className="text-xs uppercase tracking-widest text-stone-400 mb-2 block">Memory Architecture</span>
                     <span className="text-sm">Activation-diffusion graph memory uniting raw experience with conceptual sequences.</span>
                 </li>
-                <li className="p-6 bg-[#FAFAF9] rounded-sm border border-stone-100 md:col-span-2 hover:border-nobel-gold/30 transition-colors duration-300 group">
-                    <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center mb-4 border border-stone-200 group-hover:border-nobel-gold/50 group-hover:bg-nobel-gold/5 transition-colors">
-                      <Link2 size={18} className="text-stone-400 group-hover:text-nobel-gold transition-colors" />
-                    </div>
+                <li className="p-6 bg-[#FAFAF9] rounded-sm border border-stone-100 md:col-span-2 hover:border-nobel-gold/30 transition-colors duration-300">
                     <strong className="block text-stone-900 mb-2 font-serif text-xl">ACP Protocol</strong>
                     <span className="text-xs uppercase tracking-widest text-stone-400 mb-2 block">Agent Context Protocol</span>
                     <span className="text-sm">HATEOAS-inspired protocol enabling dynamic tool discovery and "delegating tasks" rather than just using tools.</span>
