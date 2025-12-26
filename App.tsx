@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { HeroScene } from './components/QuantumScene';
 import { MemoryActivationDiagram, ArchitectureDiagram, ImpactMetrics, IssueFrameworkDiagram } from './components/Diagrams';
+import { EngramNetwork3D } from './components/EngramNetwork3D';
 import { DemoSimulation } from './components/DemoSimulation';
 import { TechSpecs } from './components/TechSpecs';
 import { ArrowDown, Menu, X, Github, ExternalLink, FileText, Copy, Check, ChevronUp, Download } from 'lucide-react';
@@ -402,7 +403,7 @@ const App: React.FC = () => {
                         </ul>
                     </div>
                     <div className="bg-[#FAFAF9] p-2 rounded-lg shadow-inner">
-                        <MemoryActivationDiagram />
+                        <EngramNetwork3D />
                     </div>
                 </div>
             </div>
