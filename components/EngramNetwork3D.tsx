@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useRef, useState, useMemo, useCallback } from 'react';
+import React, { useRef, useState, useMemo, useCallback, useEffect } from 'react';
 import { Canvas, useFrame, ThreeEvent } from '@react-three/fiber';
 import { Sphere, Line, OrbitControls, Html } from '@react-three/drei';
 import * as THREE from 'three';
@@ -296,10 +296,37 @@ export const EngramNetwork3D: React.FC = () => {
   const [pulseWaves, setPulseWaves] = useState<{ origin: [number, number, number]; startTime: number }[]>([]);
   const clockRef = useRef(0);
 
+  // Refs to track timers for cleanup
+  const decayIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const spreadTimeoutsRef = useRef<NodeJS.Timeout[]>([]);
+  const pulseCleanupRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Cleanup function for all timers
+  const cleanupTimers = useCallback(() => {
+    if (decayIntervalRef.current) {
+      clearInterval(decayIntervalRef.current);
+      decayIntervalRef.current = null;
+    }
+    spreadTimeoutsRef.current.forEach(t => clearTimeout(t));
+    spreadTimeoutsRef.current = [];
+    if (pulseCleanupRef.current) {
+      clearTimeout(pulseCleanupRef.current);
+      pulseCleanupRef.current = null;
+    }
+  }, []);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => cleanupTimers();
+  }, [cleanupTimers]);
+
   // Activation diffusion logic
   const handleActivate = useCallback((id: number) => {
     const node = nodes.find(n => n.id === id);
     if (!node) return;
+
+    // Clear previous timers before starting new activation
+    cleanupTimers();
 
     // Add pulse wave
     setPulseWaves(prev => [...prev, { origin: node.position, startTime: clockRef.current }]);
@@ -315,7 +342,7 @@ export const EngramNetwork3D: React.FC = () => {
     const spreadActivation = (sourceId: number, strength: number, depth: number) => {
       if (depth > 3 || strength < 0.1) return;
 
-      setTimeout(() => {
+      const timeoutId = setTimeout(() => {
         const connectedEdges = edges.filter(e => e.source === sourceId || e.target === sourceId);
 
         connectedEdges.forEach(edge => {
@@ -340,12 +367,14 @@ export const EngramNetwork3D: React.FC = () => {
           spreadActivation(neighborId, transferStrength, depth + 1);
         });
       }, 400 * depth);
+
+      spreadTimeoutsRef.current.push(timeoutId);
     };
 
     spreadActivation(id, 1, 1);
 
     // Decay activations over time
-    const decayInterval = setInterval(() => {
+    decayIntervalRef.current = setInterval(() => {
       setActivations(prev => {
         const newMap = new Map();
         let hasActiveNodes = false;
@@ -358,8 +387,9 @@ export const EngramNetwork3D: React.FC = () => {
           }
         });
 
-        if (!hasActiveNodes) {
-          clearInterval(decayInterval);
+        if (!hasActiveNodes && decayIntervalRef.current) {
+          clearInterval(decayIntervalRef.current);
+          decayIntervalRef.current = null;
         }
 
         return newMap;
@@ -367,10 +397,10 @@ export const EngramNetwork3D: React.FC = () => {
     }, 100);
 
     // Cleanup old pulse waves
-    setTimeout(() => {
+    pulseCleanupRef.current = setTimeout(() => {
       setPulseWaves([]);
     }, 3000);
-  }, [nodes, edges]);
+  }, [nodes, edges, cleanupTimers]);
 
   // Update clock reference
   const updateClock = useCallback((time: number) => {
