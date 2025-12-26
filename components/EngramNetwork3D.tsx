@@ -506,7 +506,11 @@ export const EngramNetwork3D: React.FC = () => {
         Watch how memories activate through conceptual links — not keyword matching.
       </p>
 
-      <div className="relative w-full max-w-3xl h-[380px] md:h-[480px] bg-gradient-to-b from-slate-100 via-white to-slate-50 rounded-xl border border-stone-200 shadow-inner overflow-hidden">
+      <div
+        className="relative w-full max-w-3xl h-[380px] md:h-[480px] bg-gradient-to-b from-slate-100 via-white to-slate-50 rounded-xl border border-stone-200 shadow-inner overflow-hidden"
+        role="img"
+        aria-label="Interactive 3D visualization of Engram memory network with activation-diffusion"
+      >
         <Canvas
           camera={{ position: [0, 1.5, 6], fov: 45 }}
           onCreated={({ clock }) => {

@@ -157,7 +157,7 @@ export const DemoSimulation: React.FC = () => {
                 <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
                 <span className="font-serif font-bold text-stone-900">PromptX Desktop</span>
             </div>
-            <button onClick={resetDemo} className="p-1 hover:bg-stone-100 rounded-full text-stone-400 hover:text-stone-600 transition-colors">
+            <button onClick={resetDemo} aria-label="Reset demo" className="p-1 hover:bg-stone-100 rounded-full text-stone-400 hover:text-stone-600 transition-colors">
                 <RotateCcw size={16} />
             </button>
         </div>
