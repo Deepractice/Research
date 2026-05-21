@@ -55,24 +55,19 @@ const FadeInSection: React.FC<{ children: React.ReactNode; className?: string; d
   );
 };
 
-const AuthorCard = ({ name, role, tag, link, linkLabel, delay }: { name: string, role: string, tag?: string, link?: string, linkLabel?: string, delay: string }) => {
-  const cardClass = "flex flex-col group animate-fade-in-up items-center p-6 bg-white rounded-xl border border-stone-200 shadow-sm hover:shadow-lg transition-all duration-500 w-full sm:w-64 hover:border-nobel-gold/50";
+const AuthorCard = ({ name, role, symbol, link, delay }: { name: string, role: string, symbol?: string, link?: string, delay: string }) => {
+  const cardClass = "relative flex flex-col group animate-fade-in-up items-center p-6 bg-white rounded-xl border border-stone-200 shadow-sm hover:shadow-lg transition-all duration-500 w-full sm:w-64 hover:border-nobel-gold/50";
   const inner = (
     <>
-      <h3 className="font-serif text-lg text-stone-900 text-center mb-2 group-hover:text-nobel-gold transition-colors duration-300">{name}</h3>
+      {link && (
+        <Github size={14} className="absolute top-3 right-3 text-stone-400 group-hover:text-nobel-gold transition-colors" aria-hidden="true" />
+      )}
+      <h3 className="font-serif text-lg text-stone-900 text-center mb-2 group-hover:text-nobel-gold transition-colors duration-300">
+        {name}
+        {symbol && <sup className="ml-0.5 text-nobel-gold font-sans text-sm not-italic">{symbol}</sup>}
+      </h3>
       <div className="w-8 h-0.5 bg-nobel-gold mb-3 opacity-60 group-hover:w-16 transition-all duration-300"></div>
       <p className="text-[10px] text-stone-500 font-bold uppercase tracking-widest text-center leading-relaxed h-8 flex items-center justify-center">{role}</p>
-      {tag && (
-        <span className="mt-2 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest rounded-sm bg-nobel-gold/10 text-nobel-gold border border-nobel-gold/30">
-          {tag}
-        </span>
-      )}
-      {link && linkLabel && (
-        <span className="mt-2 inline-flex items-center gap-1.5 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest rounded-sm bg-stone-900 text-white group-hover:bg-nobel-gold transition-colors">
-          <Github size={10} />
-          {linkLabel}
-        </span>
-      )}
     </>
   );
 
@@ -103,9 +98,11 @@ const BibTeXSection = () => {
   const timeoutRef = useRef<number | null>(null);
   const bibtex = `@inproceedings{promptx2026,
   title={PromptX: A Cognitive Agent Platform with Long-term Memory},
-  author={Wang, Binhao and Huang, Jianglin and Hu, Xiao and Jiang, Shan and Wang, Maolin and Yang, Ching-ho},
-  booktitle={Proceedings of the WWW Companion '26},
-  year={2026}
+  author={Wang, Binhao and Huang, Jianglin and Hu, Xiao and Jiang, Shan and Wang, Maolin and Yang, Ching-ho and Jiang, Jian and Ye, Junhao and Cen, Yaozu and Zeng, Rui and Zhou, Yingtong and Luo, Yingjie and Wu, Guanjie and Xu, Wangzhong and Zhou, Feiyu and Zhao, Xiangyu},
+  booktitle={Proceedings of the ACM Web Conference 2026 (WWW Companion '26)},
+  year={2026},
+  publisher={ACM},
+  doi={10.1145/3774905.3793108}
 }`;
 
   // Cleanup timeout on unmount
@@ -625,20 +622,28 @@ const App: React.FC = () => {
                     </p>
                 </div>
                 
-                {/* Core Contributors */}
-                <div className="flex flex-wrap gap-6 justify-center max-w-5xl mx-auto mb-8">
-                    <AuthorCard name="Binhao Wang" role="City University of Hong Kong" delay="0s" />
-                    <AuthorCard name="Jianglin Huang" role="Deepractice AI Limited" delay="0.1s" />
-                    <AuthorCard name="Xiao Hu" role="Deepractice AI Limited" delay="0.1s" />
-                    <AuthorCard name="Shan Jiang" role="Deepractice AI Limited" tag="Core Contributor" delay="0.2s" />
-                    <AuthorCard name="Maolin Wang" role="CityU HK & Deepractice AI" delay="0.2s" />
-                    <AuthorCard name="Ching-ho Yang" role="Deepractice AI Limited" link="https://github.com/deepracticexc" linkLabel="Site Author" delay="0.3s" />
+                {/* Core Contributors (symbol legend follows the PDF) */}
+                <div className="flex flex-wrap gap-6 justify-center max-w-5xl mx-auto">
+                    <AuthorCard name="Binhao Wang" role="City University of Hong Kong" symbol="*" delay="0s" />
+                    <AuthorCard name="Jianglin Huang" role="Deepractice AI Limited" symbol="*" delay="0.1s" />
+                    <AuthorCard name="Xiao Hu" role="Deepractice AI Limited" symbol="*" delay="0.1s" />
+                    <AuthorCard name="Shan Jiang" role="Deepractice AI Limited" symbol="†" delay="0.2s" />
+                    <AuthorCard name="Maolin Wang" role="CityU HK & Deepractice AI" symbol="*‡" delay="0.2s" />
+                    <AuthorCard name="Ching-ho Yang" role="Deepractice AI Limited" symbol="*§" link="https://github.com/deepracticexc" delay="0.3s" />
                 </div>
 
-                {/* Acknowledgments */}
+                {/* Symbol legend — first row mirrors the PDF, second row adds website-only role */}
+                <div className="mt-6 text-center text-xs text-stone-500 flex flex-wrap justify-center gap-x-6 gap-y-1">
+                    <span><sup className="text-nobel-gold">*</sup> Core Contributor</span>
+                    <span><sup className="text-nobel-gold">†</sup> Project Leader</span>
+                    <span><sup className="text-nobel-gold">‡</sup> Corresponding Author</span>
+                    <span><sup className="text-nobel-gold">§</sup> Co-Founder &amp; Site Author</span>
+                </div>
+
+                {/* Contributing Authors (the remaining 10 PDF-listed authors) */}
                 <div className="mt-16 max-w-5xl mx-auto">
                     <div className="text-center mb-6">
-                        <div className="inline-block text-[10px] font-bold tracking-[0.2em] text-nobel-gold uppercase">Acknowledgments</div>
+                        <div className="inline-block text-[10px] font-bold tracking-[0.2em] text-nobel-gold uppercase">Contributing Authors</div>
                     </div>
                     <div className="flex flex-wrap gap-4 justify-center">
                         {[
