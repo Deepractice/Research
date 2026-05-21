@@ -15,8 +15,8 @@
     <meta property="og:type" content="website" />
     <meta property="og:title" content="PromptX: Cognitive Agent Platform with Long-term Memory" />
     <meta property="og:description" content="A cognitive agent platform enabling AI agents to construct structured memory through Activation-Diffusion Networks. Published at WWW Companion '26." />
-    <meta property="og:image" content="https://deepractice.github.io/Research/promptx-og.png" />
-    <meta property="og:url" content="https://deepractice.github.io/Research/" />
+    <meta property="og:image" content="https://research.deepractice.ai/promptx-logo.png" />
+    <meta property="og:url" content="https://research.deepractice.ai/" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -32,10 +32,12 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 
+    <!-- Canonical -->
+    <link rel="canonical" href="https://research.deepractice.ai/" />
+
     <!-- Preload Critical Resources -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://cdn.tailwindcss.com">
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" as="style" />
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
@@ -72,120 +74,19 @@
     }
     </script>
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              serif: ['"Playfair Display"', 'serif'],
-              sans: ['"Inter"', 'sans-serif'],
-            },
-            colors: {
-              nobel: {
-                gold: '#C5A059',
-                dark: '#1c1917', // Stone 900
-                sand: '#f5f5f4', // Stone 100
-                dim: '#44403c',  // Stone 700
-              }
-            },
-            animation: {
-              'fade-in': 'fadeIn 0.5s ease-out forwards',
-              'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
-              'scale-up': 'scaleUp 0.3s ease-out forwards',
-              'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-            },
-            keyframes: {
-              fadeIn: {
-                '0%': { opacity: '0' },
-                '100%': { opacity: '1' },
-              },
-              fadeInUp: {
-                '0%': { opacity: '0', transform: 'translateY(20px)' },
-                '100%': { opacity: '1', transform: 'translateY(0)' },
-              },
-              scaleUp: {
-                '0%': { transform: 'scale(0.95)', opacity: '0' },
-                '100%': { transform: 'scale(1)', opacity: '1' },
-              }
-            }
-          }
-        }
-      }
-    </script>
-    <style>
-      html {
-        scroll-behavior: smooth;
-        scroll-padding-top: 100px;
-      }
-      body {
-        background-color: #FAFAF9; /* Stone 50 */
-        color: #1c1917;
-      }
-      ::selection {
-        background-color: #C5A059;
-        color: white;
-      }
-      /* Custom Scrollbar for Modal/Code Blocks */
-      ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
-      }
-      ::-webkit-scrollbar-track {
-        background: #f5f5f4; 
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #d6d3d1; 
-        border-radius: 4px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #a8a29e; 
-      }
-      @media print {
-        nav, footer, button {
-          display: none !important;
-        }
-      }
-    </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react": "https://aistudiocdn.com/react@^19.2.0",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
-    "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "@react-three/fiber": "https://aistudiocdn.com/@react-three/fiber@^9.4.0",
-    "@react-three/drei": "https://aistudiocdn.com/@react-three/drei@^10.7.7",
-    "three": "https://aistudiocdn.com/three@^0.181.1",
-    "framer-motion": "https://aistudiocdn.com/framer-motion@^12.23.24",
-    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.553.0"
-  }
-}
-</script>
-<link rel="stylesheet" href="/index.css">
-</head>
+  </head>
   <body>
-    <!-- Loading Screen -->
-    <div id="loader" style="position:fixed;inset:0;background:#FAFAF9;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity 0.5s;">
-      <div style="width:60px;height:60px;border:3px solid #e7e5e4;border-top-color:#C5A059;border-radius:50%;animation:spin 1s linear infinite;"></div>
-      <p style="margin-top:20px;font-family:Playfair Display,serif;color:#78716c;font-size:14px;letter-spacing:2px;">LOADING</p>
-    </div>
-    <style>
-      @keyframes spin { to { transform: rotate(360deg); } }
-    </style>
-
+    <noscript>
+      <div style="padding:48px 24px;max-width:640px;margin:0 auto;font-family:'Playfair Display',serif;color:#1c1917;">
+        <h1 style="font-size:24px;margin-bottom:16px;">PromptX: A Cognitive Agent Platform with Long-term Memory</h1>
+        <p style="font-family:Inter,sans-serif;color:#57534e;line-height:1.6;font-size:15px;">
+          This site requires JavaScript to view interactive visualizations.
+          <a href="/2026_WWW_Demo.pdf" style="color:#c5a059;">Download the paper (PDF)</a>
+          to read the full work offline.
+        </p>
+      </div>
+    </noscript>
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
-    <script>
-      // Hide loader when app is ready
-      window.addEventListener('load', () => {
-        setTimeout(() => {
-          const loader = document.getElementById('loader');
-          if (loader) {
-            loader.style.opacity = '0';
-            setTimeout(() => loader.remove(), 500);
-          }
-        }, 300);
-      });
-    </script>
-</body>
+  </body>
 </html>

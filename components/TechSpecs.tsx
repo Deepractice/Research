@@ -67,9 +67,9 @@ export const TechSpecs: React.FC = () => {
 };
 
 // Syntax highlighting helper
-const highlightPML = (text: string): JSX.Element => {
+const highlightPML = (text: string): React.ReactElement => {
   // Pattern to match XML-like syntax
-  const parts: JSX.Element[] = [];
+  const parts: React.ReactElement[] = [];
   let remaining = text;
   let key = 0;
 

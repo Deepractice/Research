@@ -10,15 +10,9 @@
   "icons": [
     {
       "src": "/promptx-logo.png",
-      "sizes": "192x192",
+      "sizes": "128x128",
       "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/promptx-logo.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ],
   "categories": ["education", "productivity", "utilities"],

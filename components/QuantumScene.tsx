@@ -3,10 +3,15 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, Suspense } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Float, Sphere, Line, Stars, Environment } from '@react-three/drei';
+import { Float, Sphere, Line, Environment, useEnvironment } from '@react-three/drei';
 import * as THREE from 'three';
+
+// Preload the HDR environment so the first paint doesn't suspend the Canvas subtree.
+// Per pmndrs/react-three-fiber discussion #2576: Suspense should live INSIDE Canvas,
+// and the underlying asset should be preloaded to avoid first-frame flicker.
+useEnvironment.preload({ preset: 'city' });
 
 // Add type definitions for Three.js elements in JSX
 declare global {
@@ -148,7 +153,11 @@ export const HeroScene: React.FC = () => {
           </InteractiveGroup>
         </Float>
 
-        <Environment preset="city" />
+        {/* Suspense lives INSIDE Canvas so the Canvas itself never unmounts while
+            the HDR loads (pmndrs/react-three-fiber discussion #2576). */}
+        <Suspense fallback={null}>
+          <Environment preset="city" />
+        </Suspense>
       </Canvas>
     </div>
   );
@@ -160,8 +169,10 @@ export const NetworkScene: React.FC = () => {
       <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
         <ambientLight intensity={0.8} />
         <spotLight position={[5, 5, 5]} intensity={1.5} color="#C5A059" />
-        <Environment preset="city" />
-        
+        <Suspense fallback={null}>
+          <Environment preset="city" />
+        </Suspense>
+
         <Float rotationIntensity={0.5} floatIntensity={0.2} speed={1.5}>
            <group>
              {/* Central Hub Node */}

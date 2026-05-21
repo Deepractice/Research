@@ -7,7 +7,7 @@ import React, { useState, useEffect, useRef, useCallback, lazy, Suspense } from 
 import { MemoryActivationDiagram, ArchitectureDiagram, ImpactMetrics, IssueFrameworkDiagram, LubanWorkflowDiagram } from './components/Diagrams';
 import { DemoSimulation } from './components/DemoSimulation';
 import { TechSpecs } from './components/TechSpecs';
-import { ArrowDown, Menu, X, Github, ExternalLink, FileText, Copy, Check, ChevronUp, Download, Loader2, Moon, Sun, Keyboard } from 'lucide-react';
+import { ArrowDown, Menu, X, Github, ExternalLink, FileText, Copy, Check, ChevronUp, Download, Loader2 } from 'lucide-react';
 
 // Lazy load heavy 3D components
 const HeroScene = lazy(() => import('./components/QuantumScene').then(m => ({ default: m.HeroScene })));
@@ -55,12 +55,45 @@ const FadeInSection: React.FC<{ children: React.ReactNode; className?: string; d
   );
 };
 
-const AuthorCard = ({ name, role, delay }: { name: string, role: string, delay: string }) => {
-  return (
-    <div className="flex flex-col group animate-fade-in-up items-center p-6 bg-white rounded-xl border border-stone-200 shadow-sm hover:shadow-lg transition-all duration-500 w-full sm:w-64 hover:border-nobel-gold/50" style={{ animationDelay: delay }}>
+const AuthorCard = ({ name, role, tag, link, linkLabel, delay }: { name: string, role: string, tag?: string, link?: string, linkLabel?: string, delay: string }) => {
+  const cardClass = "flex flex-col group animate-fade-in-up items-center p-6 bg-white rounded-xl border border-stone-200 shadow-sm hover:shadow-lg transition-all duration-500 w-full sm:w-64 hover:border-nobel-gold/50";
+  const inner = (
+    <>
       <h3 className="font-serif text-lg text-stone-900 text-center mb-2 group-hover:text-nobel-gold transition-colors duration-300">{name}</h3>
       <div className="w-8 h-0.5 bg-nobel-gold mb-3 opacity-60 group-hover:w-16 transition-all duration-300"></div>
       <p className="text-[10px] text-stone-500 font-bold uppercase tracking-widest text-center leading-relaxed h-8 flex items-center justify-center">{role}</p>
+      {tag && (
+        <span className="mt-2 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest rounded-sm bg-nobel-gold/10 text-nobel-gold border border-nobel-gold/30">
+          {tag}
+        </span>
+      )}
+      {link && linkLabel && (
+        <span className="mt-2 inline-flex items-center gap-1.5 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest rounded-sm bg-stone-900 text-white group-hover:bg-nobel-gold transition-colors">
+          <Github size={10} />
+          {linkLabel}
+        </span>
+      )}
+    </>
+  );
+
+  if (link) {
+    return (
+      <a
+        href={link}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`${name} — open profile`}
+        className={`${cardClass} cursor-pointer hover:-translate-y-1`}
+        style={{ animationDelay: delay }}
+      >
+        {inner}
+      </a>
+    );
+  }
+
+  return (
+    <div className={cardClass} style={{ animationDelay: delay }}>
+      {inner}
     </div>
   );
 };
@@ -82,11 +115,15 @@ const BibTeXSection = () => {
     };
   }, []);
 
-  const handleCopy = useCallback(() => {
-    navigator.clipboard.writeText(bibtex);
-    setCopied(true);
-    if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
-    timeoutRef.current = window.setTimeout(() => setCopied(false), 2000);
+  const handleCopy = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(bibtex);
+      setCopied(true);
+      if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
+      timeoutRef.current = window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Clipboard blocked (non-https / permission denied) — fail silently.
+    }
   }, [bibtex]);
 
   return (
@@ -101,148 +138,145 @@ const BibTeXSection = () => {
             {copied ? "Copied" : "Copy"}
          </button>
       </div>
-      <div className="bg-stone-800 p-6 rounded-sm border border-stone-700 font-mono text-xs text-stone-400 leading-relaxed overflow-x-auto">
-        <pre>{bibtex}</pre>
+      <div className="bg-stone-800 p-6 rounded-sm border border-stone-700 font-mono text-xs text-stone-400 leading-relaxed">
+        <pre className="whitespace-pre-wrap break-words">{bibtex}</pre>
       </div>
     </div>
   );
 };
 
 const PaperReaderModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
+  const closeBtnRef = useRef<HTMLButtonElement | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      // Focus the close button when modal opens (a11y: keyboard users land inside)
+      requestAnimationFrame(() => closeBtnRef.current?.focus());
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white w-full max-w-4xl h-[80vh] rounded-sm shadow-2xl flex flex-col overflow-hidden relative animate-scale-up">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="paper-modal-title"
+      className="fixed inset-0 z-[60] flex items-end justify-center sm:items-center sm:p-4 bg-stone-900/60 backdrop-blur-sm animate-fade-in"
+      onClick={onClose}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white w-full h-[92vh] sm:h-[80vh] sm:max-w-4xl rounded-t-2xl sm:rounded-sm shadow-2xl flex flex-col overflow-hidden relative animate-scale-up"
+      >
+        {/* Drag handle (mobile only) */}
+        <div className="sm:hidden flex justify-center pt-2 pb-1 shrink-0">
+           <div className="w-10 h-1 rounded-full bg-stone-300" aria-hidden="true" />
+        </div>
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-stone-200 bg-stone-50">
-           <div className="flex items-center gap-3">
-              <div className="p-2 bg-stone-200 rounded-sm">
-                 <FileText size={18} className="text-stone-600" />
+           <div className="flex items-center gap-3 min-w-0">
+              <div className="p-2 bg-stone-200 rounded-sm shrink-0">
+                 <FileText size={18} className="text-stone-600" aria-hidden="true" />
               </div>
-              <div>
-                 <h3 className="font-serif font-bold text-stone-900 leading-none">PromptX_WWW26_CameraReady.pdf</h3>
+              <div className="min-w-0">
+                 <h3 id="paper-modal-title" className="font-serif font-bold text-stone-900 leading-tight text-sm sm:text-base truncate">PromptX_WWW26_CameraReady.pdf</h3>
                  <span className="text-[10px] text-stone-500 uppercase tracking-widest">Preview Mode</span>
               </div>
            </div>
-           <div className="flex items-center gap-2">
-              <a href={import.meta.env.BASE_URL + "2026_WWW_Demo.pdf"} download className="p-2 text-stone-400 hover:text-stone-900 transition-colors" title="Download PDF">
+           <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+              <a href={import.meta.env.BASE_URL + "2026_WWW_Demo.pdf"} download className="p-2 text-stone-400 hover:text-stone-900 transition-colors" title="Download PDF" aria-label="Download PDF">
                  <Download size={18} />
               </a>
-              <button onClick={onClose} className="p-2 text-stone-400 hover:text-red-500 transition-colors">
+              <button ref={closeBtnRef} onClick={onClose} className="p-2 text-stone-400 hover:text-red-500 transition-colors" aria-label="Close">
                  <X size={18} />
               </button>
            </div>
         </div>
-        
+
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-8 md:p-12 bg-stone-100">
-           <div className="max-w-3xl mx-auto bg-white shadow-lg min-h-full p-12 text-stone-800">
-              <div className="text-center mb-12">
-                 <h1 className="font-serif text-3xl font-bold mb-4">PromptX: A Cognitive Agent Platform with Long-term Memory</h1>
-                 <div className="text-sm text-stone-500 mb-6 italic">
-                    Binhao Wang, Jianglin Huang, Xiao Hu, Shan Jiang, Maolin Wang, Ching-ho Yang
-                 </div>
+        <div className="flex-1 overflow-y-auto bg-stone-50">
+           <article className="max-w-3xl mx-auto px-5 py-8 sm:px-10 sm:py-12 text-stone-800">
+              <header className="text-center mb-10 sm:mb-12">
+                 <h1 className="font-serif font-bold text-stone-900 mb-5 leading-tight text-balance text-xl sm:text-2xl md:text-3xl">
+                    PromptX: A Cognitive Agent Platform with Long-term Memory
+                 </h1>
                  <div className="inline-block px-3 py-1 border border-stone-200 text-[10px] uppercase tracking-widest text-stone-400 rounded-sm">
                     WWW Companion '26
                  </div>
-              </div>
+              </header>
 
-              <div className="mb-8">
+              <section className="mb-8">
                  <h4 className="font-bold text-sm uppercase tracking-widest mb-3 text-stone-900 border-b border-stone-100 pb-2">Abstract</h4>
-                 <p className="font-serif text-justify text-stone-600 leading-relaxed text-sm">
+                 <p className="font-serif text-stone-600 leading-relaxed text-[15px] text-left sm:text-justify">
                     Large Language Models (LLMs) have demonstrated remarkable capabilities in natural language understanding and generation. However, their application in complex, long-term industrial scenarios is often hindered by catastrophic forgetting and a lack of personalized reasoning. Existing approaches, such as Retrieval-Augmented Generation (RAG), typically rely on retrieving static text chunks, which fails to capture the complex, evolving inter-dependencies of real-world tasks. To address these gaps, we introduce PromptX, a cognitive agent platform designed to enable agents to construct structured memory and develop reasoning capabilities over time. PromptX introduces three core technical innovations: (1) Prompt Markup Language (PML), a standardized definition language for agent personas; (2) An Engram-based Memory Architecture using Activation-Diffusion networks; and (3) The Agent Context Protocol (ACP) for dynamic tool discovery.
                  </p>
-              </div>
+              </section>
 
-              <div className="mb-8">
+              <section className="mb-8">
                  <h4 className="font-bold text-sm uppercase tracking-widest mb-3 text-stone-900 border-b border-stone-100 pb-2">1. Introduction</h4>
-                 <p className="font-serif text-justify text-stone-600 leading-relaxed text-sm mb-4">
+                 <p className="font-serif text-stone-600 leading-relaxed text-[15px] mb-4 text-left sm:text-justify">
                     The evolution of AI agents has shifted from simple command-response systems to autonomous entities capable of planning and tool use. Despite this progress, "memory" remains a solved problem only in the context of short context windows. When an agent needs to recall a specific user preference from a conversation three weeks ago and apply it to a new, tangentially related task, traditional vector databases often fail due to a lack of semantic structure.
                  </p>
-                 <p className="font-serif text-justify text-stone-600 leading-relaxed text-sm">
+                 <p className="font-serif text-stone-600 leading-relaxed text-[15px] text-left sm:text-justify">
                     PromptX proposes a shift from "Storage" to "Cognition". By modeling memory as <strong>Engrams</strong>—graph nodes with activation states—we mimic biological memory processes where retrieving one concept primes the activation of related concepts. This allows PromptX agents to exhibit "intuition-like" retrieval patterns...
                  </p>
-              </div>
+              </section>
 
-              <div className="h-32 flex flex-col items-center justify-center gap-4 bg-stone-50 border border-dashed border-stone-200">
-                 <span className="text-stone-400 text-xs uppercase tracking-widest">[Preview Ends]</span>
-                 <div className="flex gap-3">
-                    <a href={import.meta.env.BASE_URL + "2026_WWW_Demo.pdf"} target="_blank" className="px-4 py-2 bg-stone-900 text-white text-xs uppercase tracking-widest rounded-sm hover:bg-nobel-gold transition-colors">
+              <div className="mt-10 py-8 flex flex-col items-center gap-4 bg-white border border-dashed border-stone-200 rounded-sm">
+                 <span className="text-stone-400 text-[10px] uppercase tracking-widest">[Preview Ends]</span>
+                 <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto px-5 sm:px-0">
+                    <a href={import.meta.env.BASE_URL + "2026_WWW_Demo.pdf"} target="_blank" rel="noopener noreferrer" className="px-5 py-3 sm:py-2 bg-stone-900 text-white text-xs uppercase tracking-widest rounded-sm hover:bg-nobel-gold transition-colors text-center">
                        View Full PDF
                     </a>
-                    <a href={import.meta.env.BASE_URL + "2026_WWW_Demo.pdf"} download className="px-4 py-2 border border-stone-300 text-stone-600 text-xs uppercase tracking-widest rounded-sm hover:border-nobel-gold hover:text-nobel-gold transition-colors">
+                    <a href={import.meta.env.BASE_URL + "2026_WWW_Demo.pdf"} download className="px-5 py-3 sm:py-2 border border-stone-300 text-stone-600 text-xs uppercase tracking-widest rounded-sm hover:border-nobel-gold hover:text-nobel-gold transition-colors text-center">
                        Download
                     </a>
                  </div>
               </div>
-           </div>
+           </article>
         </div>
       </div>
     </div>
   );
 };
 
-// Section IDs for keyboard navigation
-const SECTIONS = ['overview', 'architecture', 'specs', 'demo', 'memory', 'impact', 'team'];
-
 const App: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [isPaperOpen, setIsPaperOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
-  const [showKeyboardHint, setShowKeyboardHint] = useState(false);
+  const paperTriggerRef = useRef<HTMLButtonElement | null>(null);
 
-  // Keyboard navigation
+  // ESC closes overlays
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't trigger if user is typing in an input
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-
-      switch (e.key) {
-        case 'j': // Scroll down
-          window.scrollBy({ top: 300, behavior: 'smooth' });
-          break;
-        case 'k': // Scroll up
-          window.scrollBy({ top: -300, behavior: 'smooth' });
-          break;
-        case 'g': // Go to top
-          if (e.shiftKey) {
-            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-          } else {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }
-          break;
-        case 'd': // Toggle dark mode
-          if (!e.ctrlKey && !e.metaKey) {
-            setDarkMode(prev => !prev);
-          }
-          break;
-        case '?': // Show keyboard shortcuts
-          setShowKeyboardHint(prev => !prev);
-          break;
-        case 'Escape':
-          setShowKeyboardHint(false);
-          setMenuOpen(false);
-          break;
-        case '1': case '2': case '3': case '4': case '5': case '6': case '7':
-          const idx = parseInt(e.key) - 1;
-          if (idx < SECTIONS.length) {
-            const el = document.getElementById(SECTIONS[idx]);
-            el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
-          break;
+      if (e.key === 'Escape') {
+        setMenuOpen(false);
+        setIsPaperOpen(false);
       }
     };
-
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Apply dark mode class to document
+  // Lock body scroll when any full-screen overlay is open (modal or mobile menu)
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', darkMode);
-  }, [darkMode]);
+    if (!isPaperOpen && !menuOpen) return;
+    const original = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = original;
+    };
+  }, [isPaperOpen, menuOpen]);
+
+  // Restore focus to trigger ONLY on the open→closed transition (not on mount).
+  const wasPaperOpenRef = useRef(false);
+  useEffect(() => {
+    if (wasPaperOpenRef.current && !isPaperOpen) {
+      paperTriggerRef.current?.focus();
+    }
+    wasPaperOpenRef.current = isPaperOpen;
+  }, [isPaperOpen]);
 
   useEffect(() => {
     // Scroll to top on mount to prevent Three.js canvas from causing scroll jump
@@ -286,64 +320,11 @@ const App: React.FC = () => {
 
       <PaperReaderModal isOpen={isPaperOpen} onClose={() => setIsPaperOpen(false)} />
 
-      {/* Keyboard Shortcuts Modal */}
-      {showKeyboardHint && (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-fade-in" onClick={() => setShowKeyboardHint(false)}>
-          <div className="bg-white rounded-lg shadow-2xl p-6 max-w-sm w-full animate-scale-up" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-serif text-lg font-bold text-stone-900 flex items-center gap-2">
-                <Keyboard size={18} className="text-nobel-gold" />
-                Keyboard Shortcuts
-              </h3>
-              <button onClick={() => setShowKeyboardHint(false)} className="text-stone-400 hover:text-stone-600">
-                <X size={18} />
-              </button>
-            </div>
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between items-center py-2 border-b border-stone-100">
-                <span className="text-stone-600">Scroll down</span>
-                <kbd className="px-2 py-1 bg-stone-100 rounded text-xs font-mono">j</kbd>
-              </div>
-              <div className="flex justify-between items-center py-2 border-b border-stone-100">
-                <span className="text-stone-600">Scroll up</span>
-                <kbd className="px-2 py-1 bg-stone-100 rounded text-xs font-mono">k</kbd>
-              </div>
-              <div className="flex justify-between items-center py-2 border-b border-stone-100">
-                <span className="text-stone-600">Go to top</span>
-                <kbd className="px-2 py-1 bg-stone-100 rounded text-xs font-mono">g</kbd>
-              </div>
-              <div className="flex justify-between items-center py-2 border-b border-stone-100">
-                <span className="text-stone-600">Go to bottom</span>
-                <kbd className="px-2 py-1 bg-stone-100 rounded text-xs font-mono">G</kbd>
-              </div>
-              <div className="flex justify-between items-center py-2 border-b border-stone-100">
-                <span className="text-stone-600">Jump to section</span>
-                <kbd className="px-2 py-1 bg-stone-100 rounded text-xs font-mono">1-7</kbd>
-              </div>
-              <div className="flex justify-between items-center py-2">
-                <span className="text-stone-600">Toggle this help</span>
-                <kbd className="px-2 py-1 bg-stone-100 rounded text-xs font-mono">?</kbd>
-              </div>
-            </div>
-            <p className="mt-4 text-xs text-stone-400 text-center">Press <kbd className="px-1 bg-stone-100 rounded">Esc</kbd> to close</p>
-          </div>
-        </div>
-      )}
-
-      {/* Keyboard Shortcut Hint Button */}
-      <button
-        onClick={() => setShowKeyboardHint(true)}
-        aria-label="Show keyboard shortcuts"
-        className={`fixed bottom-8 left-8 z-40 p-3 bg-white text-stone-600 rounded-full shadow-lg hover:bg-nobel-gold hover:text-white transition-all duration-300 border border-stone-200 hidden md:flex ${scrolled ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}
-      >
-        <Keyboard size={18} />
-      </button>
-
       {/* Navigation - hidden at top on mobile, always visible on desktop */}
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'bg-[#FAFAF9]/90 backdrop-blur-md shadow-sm py-4 translate-y-0' : 'md:bg-transparent md:py-6 -translate-y-full md:translate-y-0'}`}>
         <div className="container mx-auto px-6 flex justify-between items-center">
           <div className="flex items-center gap-3 cursor-pointer group" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-            <img src={import.meta.env.BASE_URL + "promptx-logo.png"} alt="PromptX" className="w-8 h-8" />
+            <img src={import.meta.env.BASE_URL + "promptx-logo.png"} alt="PromptX" width="32" height="32" decoding="async" fetchPriority="high" className="w-8 h-8" />
             <span className="font-serif font-bold text-lg tracking-wide">
               PROMPT<span className="text-nobel-gold group-hover:text-stone-900 transition-colors">X</span> <span className="font-normal text-stone-400 text-xs ml-2">2026</span>
             </span>
@@ -414,9 +395,14 @@ const App: React.FC = () => {
         </Suspense>
         
         <div className="relative z-10 container mx-auto px-6 text-center">
-          <div className="inline-block mb-6 px-4 py-1.5 border border-nobel-gold/50 text-nobel-gold text-[10px] tracking-[0.3em] uppercase font-bold rounded-sm backdrop-blur-sm bg-white/50 shadow-sm">
+          <a
+            href="https://www2026.thewebconf.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block mb-6 px-4 py-1.5 border border-nobel-gold/50 text-nobel-gold text-[10px] tracking-[0.3em] uppercase font-bold rounded-sm backdrop-blur-sm bg-white/50 shadow-sm hover:bg-nobel-gold hover:text-white hover:border-nobel-gold transition-colors duration-300"
+          >
             WWW Companion '26 • Dubai
-          </div>
+          </a>
           <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl font-medium leading-tight mb-8 text-stone-900 drop-shadow-sm">
             Prompt<span className="text-nobel-gold italic">X</span>
             <span className="block text-2xl md:text-3xl font-light text-stone-500 mt-6 leading-relaxed">
@@ -432,14 +418,15 @@ const App: React.FC = () => {
                 Discover
                 <ArrowDown size={14} />
              </a>
-             <button 
+             <button
+                ref={paperTriggerRef}
                 onClick={() => setIsPaperOpen(true)}
                 className="flex items-center justify-center gap-2 px-8 py-3 bg-white text-stone-900 border border-stone-200 rounded-sm font-medium shadow-sm hover:bg-stone-50 hover:border-nobel-gold transition-all duration-300 text-xs uppercase tracking-widest hover:-translate-y-1"
              >
                 <FileText size={14} />
                 Read Paper
              </button>
-             <a href="https://promptx.deepractice.ai/" target="_blank" className="flex items-center justify-center gap-2 px-8 py-3 bg-transparent text-stone-900 border border-stone-400 rounded-sm font-medium hover:bg-stone-50 hover:border-nobel-gold transition-all duration-300 text-xs uppercase tracking-widest hover:-translate-y-1">
+             <a href="https://promptx.deepractice.ai/" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 px-8 py-3 bg-transparent text-stone-900 border border-stone-400 rounded-sm font-medium hover:bg-stone-50 hover:border-nobel-gold transition-all duration-300 text-xs uppercase tracking-widest hover:-translate-y-1">
                 Live Demo
                 <ExternalLink size={14} />
              </a>
@@ -643,30 +630,35 @@ const App: React.FC = () => {
                     <AuthorCard name="Binhao Wang" role="City University of Hong Kong" delay="0s" />
                     <AuthorCard name="Jianglin Huang" role="Deepractice AI Limited" delay="0.1s" />
                     <AuthorCard name="Xiao Hu" role="Deepractice AI Limited" delay="0.1s" />
-                    <AuthorCard name="Shan Jiang" role="Deepractice AI (Core Contributor)" delay="0.2s" />
+                    <AuthorCard name="Shan Jiang" role="Deepractice AI Limited" tag="Core Contributor" delay="0.2s" />
                     <AuthorCard name="Maolin Wang" role="CityU HK & Deepractice AI" delay="0.2s" />
-                    <AuthorCard name="Ching-ho Yang" role="Deepractice AI Limited" delay="0.3s" />
+                    <AuthorCard name="Ching-ho Yang" role="Deepractice AI Limited" link="https://github.com/deepracticexc" linkLabel="Site Author" delay="0.3s" />
                 </div>
 
-                {/* Other Contributors */}
-                <div className="flex flex-wrap gap-4 justify-center max-w-5xl mx-auto">
-                    {[
-                        { name: "Jian Jiang", affiliation: "Deepractice AI" },
-                        { name: "Junhao Ye", affiliation: "Deepractice AI" },
-                        { name: "Yaozu Cen", affiliation: "Deepractice AI" },
-                        { name: "Rui Zeng", affiliation: "Deepractice AI" },
-                        { name: "Yingtong Zhou", affiliation: "Deepractice AI" },
-                        { name: "Yingjie Luo", affiliation: "Deepractice AI" },
-                        { name: "Guanjie Wu", affiliation: "Deepractice AI" },
-                        { name: "Wangzhong Xu", affiliation: "Deepractice AI" },
-                        { name: "Feiyu Zhou", affiliation: "New York University" },
-                        { name: "Xiangyu Zhao", affiliation: "City University of Hong Kong" }
-                    ].map((contributor, i) => (
-                        <div key={i} className="px-5 py-3 bg-stone-50 rounded-sm text-sm text-stone-600 border border-stone-200 hover:border-nobel-gold/50 hover:text-nobel-gold transition-colors duration-300 text-center min-w-[160px]">
-                            <div className="font-semibold text-stone-800">{contributor.name}</div>
-                            <div className="text-xs text-stone-500 mt-1">{contributor.affiliation}</div>
-                        </div>
-                    ))}
+                {/* Acknowledgments */}
+                <div className="mt-16 max-w-5xl mx-auto">
+                    <div className="text-center mb-6">
+                        <div className="inline-block text-[10px] font-bold tracking-[0.2em] text-nobel-gold uppercase">Acknowledgments</div>
+                    </div>
+                    <div className="flex flex-wrap gap-4 justify-center">
+                        {[
+                            { name: "Jian Jiang", affiliation: "Deepractice AI" },
+                            { name: "Junhao Ye", affiliation: "Deepractice AI" },
+                            { name: "Yaozu Cen", affiliation: "Deepractice AI" },
+                            { name: "Rui Zeng", affiliation: "Deepractice AI" },
+                            { name: "Yingtong Zhou", affiliation: "Deepractice AI" },
+                            { name: "Yingjie Luo", affiliation: "Deepractice AI" },
+                            { name: "Guanjie Wu", affiliation: "Deepractice AI" },
+                            { name: "Wangzhong Xu", affiliation: "Deepractice AI" },
+                            { name: "Feiyu Zhou", affiliation: "New York University" },
+                            { name: "Xiangyu Zhao", affiliation: "City University of Hong Kong" }
+                        ].map((contributor, i) => (
+                            <div key={i} className="px-5 py-3 bg-stone-50 rounded-sm text-sm text-stone-600 border border-stone-200 hover:border-nobel-gold/50 hover:text-nobel-gold transition-colors duration-300 text-center min-w-[160px]">
+                                <div className="font-semibold text-stone-800">{contributor.name}</div>
+                                <div className="text-xs text-stone-500 mt-1">{contributor.affiliation}</div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
            </div>
         </section>
@@ -678,7 +670,7 @@ const App: React.FC = () => {
             <div className="flex flex-col md:flex-row justify-between items-center gap-8 mb-12">
                 <div className="text-center md:text-left">
                     <div className="text-white font-serif font-bold text-2xl mb-2 flex items-center gap-2 justify-center md:justify-start">
-                        <img src={import.meta.env.BASE_URL + "promptx-logo.png"} alt="PromptX" className="w-6 h-6" />
+                        <img src={import.meta.env.BASE_URL + "promptx-logo.png"} alt="PromptX" width="24" height="24" loading="lazy" decoding="async" className="w-6 h-6" />
                         PromptX
                     </div>
                     <p className="text-sm text-stone-500">Cognitive Agent Platform with Long-term Memory</p>
@@ -699,7 +691,7 @@ const App: React.FC = () => {
                     <span>Published in WWW Companion '26.</span>
                 </div>
                 <div className="text-stone-500">
-                    Paper content under ACM copyright. Website code under <a href="https://github.com/Deepractice/Research/blob/main/LICENSE" target="_blank" className="hover:text-nobel-gold transition-colors">MIT License</a>.
+                    Paper content under ACM copyright. Website code under <a href="https://github.com/Deepractice/Research/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" className="hover:text-nobel-gold transition-colors">MIT License</a>.
                 </div>
             </div>
         </div>
