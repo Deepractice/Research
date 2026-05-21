@@ -223,7 +223,7 @@ const PaperReaderModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
               <div className="mt-10 py-8 flex flex-col items-center gap-4 bg-white border border-dashed border-stone-200 rounded-sm">
                  <span className="text-stone-400 text-[10px] uppercase tracking-widest">[Preview Ends]</span>
                  <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto px-5 sm:px-0">
-                    <a href={import.meta.env.BASE_URL + "2026_WWW_Demo.pdf"} target="_blank" rel="noopener noreferrer" className="px-5 py-3 sm:py-2 bg-stone-900 text-white text-xs uppercase tracking-widest rounded-sm hover:bg-nobel-gold transition-colors text-center">
+                    <a href={import.meta.env.BASE_URL + "2026_WWW_Demo.pdf"} className="px-5 py-3 sm:py-2 bg-stone-900 text-white text-xs uppercase tracking-widest rounded-sm hover:bg-nobel-gold transition-colors text-center">
                        View Full PDF
                     </a>
                     <a href={import.meta.env.BASE_URL + "2026_WWW_Demo.pdf"} download className="px-5 py-3 sm:py-2 border border-stone-300 text-stone-600 text-xs uppercase tracking-widest rounded-sm hover:border-nobel-gold hover:text-nobel-gold transition-colors text-center">
